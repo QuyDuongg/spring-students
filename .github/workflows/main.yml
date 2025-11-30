@@ -19,7 +19,7 @@ jobs:
           java-version: "17"
 
       - name: Build Spring Boot using Maven
-        run: mvnd -B package --file pom.xml
+        run: mvn -B package --file pom.xml
 
       - name: Login to Azure
         uses: azure/login@v2
