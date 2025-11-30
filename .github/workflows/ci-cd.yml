@@ -31,8 +31,8 @@ jobs:
 
       - name: Build and Push Docker image
         run: |
-          docker build -t ${{ secrets.ACR_NAME }}.azurecr.io/myapp:latest .
-          docker push ${{ secrets.ACR_NAME }}.azurecr.io/myapp:latest
+          docker build -t ${{ secrets.ACR_NAME }}.azurecr.io/myapp:v1 .
+          docker push ${{ secrets.ACR_NAME }}.azurecr.io/myapp:v1
 
       - name: Deploy to AKS
         run: |
