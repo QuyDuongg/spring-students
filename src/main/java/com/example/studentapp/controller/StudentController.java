@@ -2,8 +2,10 @@ package com.example.studentapp.controller;
 
 import com.example.studentapp.model.Student;
 import com.example.studentapp.repository.StudentRepository;
+import com.example.studentapp.service.StudentService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,10 +20,13 @@ public class StudentController {
     @Autowired
     private StudentRepository studentRepository;
     
-    // GET /students - Lấy danh sách tất cả students
+    @Autowired
+    private StudentService studentService;
+    
+    // GET /students - Lấy danh sách tất cả students (có cache 30 giây)
     @GetMapping
     public ResponseEntity<List<Student>> getAllStudents() {
-        List<Student> students = studentRepository.findAll();
+        List<Student> students = studentService.getAllStudents();
         return ResponseEntity.ok(students);
     }
     
@@ -37,7 +42,7 @@ public class StudentController {
         }
     }
     
-    // POST /students - Tạo student mới
+    // POST /students - Tạo student mới (xóa cache khi có student mới)
     @PostMapping
     public ResponseEntity<?> createStudent(@Valid @RequestBody Student student) {
         // Kiểm tra email đã tồn tại chưa
@@ -47,6 +52,8 @@ public class StudentController {
         }
         
         Student savedStudent = studentRepository.save(student);
+        // Xóa cache sau khi tạo student mới
+        studentService.evictAllStudentsCache();
         return ResponseEntity.status(HttpStatus.CREATED).body(savedStudent);
     }
 }
